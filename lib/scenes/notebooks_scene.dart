@@ -39,7 +39,8 @@ class _NotebooksListViewState extends State<NotebooksListView> {
         return InkWell(
             onTap: () {
               Navigator.pushNamed(context, NotebookDetailWidget.routeName,
-                  arguments: widget._model[index]);
+                      arguments: widget._model[index])
+                  .then((value) => {setState(() {})});
             },
             child: NotebookSliver(widget._model, index));
       },
@@ -91,21 +92,35 @@ class _NotebookSliverState extends State<NotebookSliver> {
 
 final Notebooks modelNotebooks = Notebooks.testDataBuilder();
 
-class NotebooksWidget extends StatelessWidget {
+class NotebooksWidget extends StatefulWidget {
   static const routeName = "/";
 
   @override
+  _NotebooksWidgetState createState() => _NotebooksWidgetState();
+}
+
+class _NotebooksWidgetState extends State<NotebooksWidget> {
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(TextResources.appName),
-      ),
-      body: NotebooksListView(modelNotebooks), //NotesListView(model)
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          modelNotebooks.add(Notebook.testDataBuilder());
-        },
-        child: const Icon(Icons.add),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(TextResources.appName),
+          leading: IconButton(
+              icon: const Icon(Icons.ac_unit),
+              onPressed: () {
+                setState(() {});
+                Navigator.of(context).pop();
+              }),
+        ),
+        body: NotebooksListView(modelNotebooks), //NotesListView(model)
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            modelNotebooks.add(Notebook.testDataBuilder());
+          },
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }

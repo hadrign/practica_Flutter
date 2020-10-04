@@ -39,7 +39,8 @@ class _NotesListViewState extends State<NotesListView> {
         return InkWell(
           onTap: () {
             Navigator.pushNamed(context, NoteDetailWidget.routeName,
-                arguments: widget._model[index]);
+                    arguments: widget._model[index])
+                .then((value) => {setState(() {})});
           },
           child: NotesSliver(widget._model, index),
         );
