@@ -1,6 +1,8 @@
 import 'package:everpobre/domain/notebook.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:everpobre/text_resources.dart';
+import 'package:everpobre/domain/note.dart';
 
 class NotesListView extends StatefulWidget {
   final Notebook _model;
@@ -34,7 +36,13 @@ class _NotesListViewState extends State<NotesListView> {
     return ListView.builder(
       itemCount: widget._model.length,
       itemBuilder: (context, index) {
-        return NotesSliver(widget._model, index);
+        return InkWell(
+          onTap: () {
+            Navigator.pushNamed(context, NoteDetailWidget.routeName,
+                arguments: widget._model[index]);
+          },
+          child: NotesSliver(widget._model, index),
+        );
       },
     );
   }
@@ -55,7 +63,7 @@ class NotesSliver extends StatefulWidget {
 class _NotesSliverState extends State<NotesSliver> {
   @override
   Widget build(BuildContext context) {
-    DateFormat fmt = DateFormat("yyyy-mm-dd");
+    final DateFormat fmt = DateFormat("yyyy-mm-dd");
 
     return Dismissible(
       key: UniqueKey(),
@@ -81,5 +89,67 @@ class _NotesSliverState extends State<NotesSliver> {
         ),
       ),
     );
+  }
+}
+
+//final Notebook model = Notebook.testDataBuilder();
+
+class NotebookDetailWidget extends StatelessWidget {
+  static const routeName = "/notebook";
+
+  @override
+  Widget build(BuildContext context) {
+    final Notebook notebook =
+        ModalRoute.of(context).settings.arguments as Notebook;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(TextResources.appName),
+      ),
+      body: NotesListView(notebook),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          notebook.add(Note("Una Nueva Nota"));
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class NoteDetailWidget extends StatefulWidget {
+  static const routeName = "/detail";
+
+  @override
+  _NoteDetailWidgetState createState() => _NoteDetailWidgetState();
+}
+
+class _NoteDetailWidgetState extends State<NoteDetailWidget> {
+  @override
+  Widget build(BuildContext context) {
+    final Note note = ModalRoute.of(context).settings.arguments as Note;
+    final TextEditingController _controller =
+        TextEditingController.fromValue(TextEditingValue(
+      text: note.body,
+    ));
+
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(TextResources.appName),
+        ),
+        body: Column(
+          children: [
+            TextField(
+              controller: _controller,
+              onChanged: (value) {
+                Text(note.body);
+              },
+              onSubmitted: (String value) {
+                note.body = value;
+                setState(() {});
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ));
   }
 }

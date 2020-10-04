@@ -38,6 +38,10 @@ class Notebooks with ChangeNotifier {
     notifyListeners();
   }
 
+  Notebook getNotebook(int index) {
+    return _notebooks.elementAt(index);
+  }
+
   @override
   String toString() {
     return "<$runtimeType: $length notebooks";
